@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TKC Employee Directory | ทำเนียบพนักงาน</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1F2430;
+      --ink-soft: #5A6172;
+      --ink-faint: #9AA1B0;
+      --paper: #F7F6F2;
+      --card: #FFFFFF;
+      --line: #E7E5DE;
+      --gold: #C9A24B;
+      --gold-deep: #A8842F;
+      --header: #23283A;
+
+      --b-tkc: #C9A24B;
+      --b-labx: #6B7280;
+      --b-lclinic: #E27D9C;
+      --b-spa: #4C9A6E;
+      --b-acne: #4A90C2;
+      --b-hair: #8B6F5A;
+      --b-other: #7C8496;
+
+      --radius: 14px;
+      --shadow: 0 1px 2px rgba(31, 36, 48, .05), 0 6px 20px rgba(31, 36, 48, .06);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    h1,
+    h2,
+    h3,
+    .plex {
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+    }
+
+    /* ===== Header ===== */
+    .topbar {
+      background: var(--header);
+      color: #fff;
+      padding: 18px 20px 64px;
+    }
+
+    .topbar-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+      display: grid;
+      place-items: center;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: #23283A;
+      letter-spacing: .5px;
+      flex-shrink: 0;
+    }
+
+    .topbar h1 {
+      font-size: 19px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .topbar .sub {
+      font-size: 13px;
+      color: rgba(255, 255, 255, .55);
+      font-weight: 400;
+    }
+
+    .refresh-btn {
+      margin-left: auto;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .18);
+      color: rgba(255, 255, 255, .85);
+      font-family: 'Sarabun', sans-serif;
+      font-size: 13px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background .15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .refresh-btn:hover {
+      background: rgba(255, 255, 255, .16);
+    }
+
+    .refresh-btn:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+
+    .refresh-btn svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .refresh-btn.spinning svg {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ===== Search (hero, sticky) ===== */
+    .search-zone {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      margin-top: -46px;
+      padding: 0 20px 10px;
+      background: linear-gradient(to bottom, transparent 0, transparent 36px, var(--paper) 36px);
+    }
+
+    .search-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .search-box {
+      position: relative;
+      background: var(--card);
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(201, 162, 75, .15), var(--shadow);
+    }
+
+    .search-box svg {
+      width: 20px;
+      height: 20px;
+      margin-left: 16px;
+      color: var(--ink-faint);
+      flex-shrink: 0;
+    }
+
+    .search-box input {
+      flex: 1;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 17px;
+      padding: 15px 14px;
+      color: var(--ink);
+      min-width: 0;
+    }
+
+    .search-box input::placeholder {
+      color: var(--ink-faint);
+    }
+
+    .clear-btn {
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      color: var(--ink-faint);
+      font-size: 20px;
+      line-height: 1;
+      padding: 8px 14px;
+      display: none;
+    }
+
+    .clear-btn:hover {
+      color: var(--ink);
+    }
+
+    .search-box.has-text .clear-btn {
+      display: block;
+    }
+
+    /* ===== Filters ===== */
+    .filters {
+      max-width: 1080px;
+      margin: 12px auto 0;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filters select {
+      font-family: 'Sarabun', sans-serif;
+      font-size: 13.5px;
+      padding: 8px 30px 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239AA1B0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+      color: var(--ink);
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      max-width: 100%;
+    }
+
+    .filters select:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 1px;
+    }
+
+    .filters select.active {
+      border-color: var(--gold);
+      background-color: #FBF6EA;
+      font-weight: 600;
+    }
+
+    .reset-filters {
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 13px;
+      color: var(--ink-soft);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      padding: 6px 4px;
+      display: none;
+    }
+
+    .reset-filters.visible {
+      display: inline-block;
+    }
+
+    .result-count {
+      margin-left: auto;
+      font-size: 13px;
+      color: var(--ink-soft);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ===== Stats strip ===== */
+    .stats {
+      max-width: 1080px;
+      margin: 18px auto 0;
+      padding: 0 20px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .stat-chip {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      font-family: 'Sarabun', sans-serif;
+    }
+
+    .stat-chip:hover {
+      border-color: var(--gold);
+    }
+
+    .stat-chip.selected {
+      border-color: var(--gold);
+      background: #FBF6EA;
+    }
+
+    .stat-chip:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 1px;
+    }
+
+    .stat-chip .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .stat-chip b {
+      color: var(--ink);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ===== Grid ===== */
+    .grid-wrap {
+      max-width: 1080px;
+      margin: 18px auto 60px;
+      padding: 0 20px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+
+    .person {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      box-shadow: var(--shadow);
+      animation: rise .25s ease both;
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .person {
+        animation: none;
+      }
+
+      .refresh-btn.spinning svg {
+        animation: none;
+      }
+    }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: #fff;
+      line-height: 1;
+      text-align: center;
+      padding: 2px;
+      word-break: break-all;
+      overflow: hidden;
+    }
+
+    .avatar.small-text {
+      font-size: 12px;
+    }
+
+    .p-body {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .p-nick {
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 1.25;
+    }
+
+    .p-name {
+      font-size: 13.5px;
+      color: var(--ink-soft);
+      margin-top: 1px;
+    }
+
+    .p-name-en {
+      font-size: 12px;
+      color: var(--ink-faint);
+    }
+
+    .p-role {
+      font-size: 13px;
+      color: var(--ink);
+      margin-top: 7px;
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    .p-tags {
+      margin-top: 7px;
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 2.5px 8px;
+      border-radius: 999px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      color: var(--ink-soft);
+      white-space: nowrap;
+    }
+
+    .tag.brand {
+      color: #fff;
+      border: 0;
+      font-weight: 600;
+    }
+
+    .p-mail {
+      margin-top: 9px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      background: transparent;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 4px 9px;
+      cursor: pointer;
+      max-width: 100%;
+      font-family: 'Sarabun', sans-serif;
+      transition: border-color .15s, color .15s;
+    }
+
+    .p-mail:hover {
+      border-color: var(--gold);
+      color: var(--gold-deep);
+    }
+
+    .p-mail:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 1px;
+    }
+
+    .p-mail span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .p-mail svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+
+    .p-mail.copied {
+      border-color: var(--b-spa);
+      color: var(--b-spa);
+    }
+
+    .no-mail {
+      margin-top: 9px;
+      font-size: 12px;
+      color: var(--ink-faint);
+      font-style: italic;
+    }
+
+    /* ===== States ===== */
+    .state {
+      max-width: 520px;
+      margin: 70px auto;
+      padding: 0 24px;
+      text-align: center;
+      color: var(--ink-soft);
+    }
+
+    .state .big {
+      font-size: 42px;
+      margin-bottom: 12px;
+    }
+
+    .state h2 {
+      font-size: 18px;
+      color: var(--ink);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .state p {
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .state code {
+      background: #EFEDE6;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      word-break: break-all;
+    }
+
+    .state .retry {
+      margin-top: 18px;
+      background: var(--header);
+      color: #fff;
+      border: 0;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 14px;
+      padding: 10px 22px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .state .retry:hover {
+      background: #32384e;
+    }
+
+    .loader {
+      width: 34px;
+      height: 34px;
+      margin: 0 auto 16px;
+      border: 3px solid var(--line);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    .skeleton-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+
+    .sk-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      height: 130px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sk-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(31, 36, 48, .04), transparent);
+      animation: shimmer 1.4s infinite;
+    }
+
+    @keyframes shimmer {
+      from {
+        transform: translateX(-100%);
+      }
+
+      to {
+        transform: translateX(100%);
+      }
+    }
+
+    .updated-at {
+      text-align: center;
+      font-size: 12px;
+      color: var(--ink-faint);
+      padding-bottom: 40px;
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        padding: 14px 16px 58px;
+      }
+
+      .topbar h1 {
+        font-size: 16px;
+      }
+
+      .topbar .sub {
+        display: none;
+      }
+
+      .search-zone {
+        padding: 0 12px 8px;
+      }
+
+      .grid-wrap,
+      .stats {
+        padding: 0 12px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .search-box input {
+        font-size: 16px;
+        padding: 13px 10px;
+      }
+
+      .result-count {
+        width: 100%;
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="logo-mark">TKC</div>
+      <div>
+        <h1>ทำเนียบพนักงาน <span style="color:var(--gold)">The Klinique Group</span></h1>
+        <div class="sub">Employee Directory — ค้นหารายชื่อ ตำแหน่ง และอีเมลพนักงาน</div>
+      </div>
+      <button class="refresh-btn" id="refreshBtn" title="โหลดข้อมูลใหม่จาก Google Sheet">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-3-6.7" />
+          <path d="M21 3v6h-6" />
+        </svg>
+        รีเฟรช
+      </button>
+    </div>
+  </header>
+
+  <div class="search-zone">
+    <div class="search-inner">
+      <div class="search-box" id="searchBox">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        <input type="search" id="searchInput" placeholder="ค้นหา ชื่อ / ชื่อเล่น / ตำแหน่ง / อีเมล…" autocomplete="off"
+          aria-label="ค้นหาพนักงาน">
+        <button class="clear-btn" id="clearBtn" aria-label="ล้างคำค้นหา">×</button>
+      </div>
+      <div class="filters">
+        <select id="filterBranch" aria-label="กรองตามสาขา">
+          <option value="">สาขา · ทั้งหมด</option>
+        </select>
+        <select id="filterDivision" aria-label="กรองตามฝ่าย">
+          <option value="">ฝ่าย · ทั้งหมด</option>
+        </select>
+        <select id="filterDept" aria-label="กรองตามแผนก">
+          <option value="">แผนก · ทั้งหมด</option>
+        </select>
+        <button class="reset-filters" id="resetBtn">ล้างตัวกรอง</button>
+        <span class="result-count" id="resultCount"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats" id="statsStrip"></div>
+
+  <main class="grid-wrap">
+    <div id="content"></div>
+  </main>
+
+  <div class="updated-at" id="updatedAt"></div>
+
+  <script>
+    /* ============================================================
+       ตั้งค่า: วาง URL ของ Apps Script Web App ที่ deploy แล้วตรงนี้
+       (ดูวิธี deploy ในไฟล์ คู่มือติดตั้ง.md)
+       ============================================================ */
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzboAPLAMBcdV_vMdKnD-URSCleWGkGsvtANMN_O65h3WhTk4m8UPHwAAUOE-UmuqowVA/exec';
+
+    const CACHE_KEY = 'tkc_directory_cache_v1';
+    const CACHE_TTL_MIN = 30; // นาที
+
+    const BRAND_COLORS = [
+      { match: /TKC/i, color: 'var(--b-tkc)' },
+      { match: /LAB\s*X/i, color: 'var(--b-labx)' },
+      { match: /L'?CLINIC/i, color: 'var(--b-lclinic)' },
+      { match: /SPA|WELLNESS/i, color: 'var(--b-spa)' },
+      { match: /ACNE/i, color: 'var(--b-acne)' },
+      { match: /HAIR/i, color: 'var(--b-hair)' },
+    ];
+    function brandColor(branch) {
+      for (const b of BRAND_COLORS) if (b.match.test(branch || '')) return b.color;
+      return 'var(--b-other)';
+    }
+
+    let people = [];
+    let state = { q: '', branch: '', division: '', dept: '' };
+
+    const $ = id => document.getElementById(id);
+    const content = $('content');
+
+    /* ---------- โหลดข้อมูล ---------- */
+    async function loadData(force = false) {
+      if (APPS_SCRIPT_URL.startsWith('PASTE_')) {
+        renderState('setup');
+        return;
+      }
+      // ลอง cache ก่อน
+      if (!force) {
+        try {
+          const c = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
+          if (c && (Date.now() - c.t) < CACHE_TTL_MIN * 60000 && Array.isArray(c.rows)) {
+            ingest(c.rows, new Date(c.t));
+            return;
+          }
+        } catch (e) { /* cache เสีย ข้ามไป */ }
+      }
+      renderState('loading');
+      $('refreshBtn').classList.add('spinning');
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, { redirect: 'follow' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        if (!data.ok || !Array.isArray(data.rows)) throw new Error(data.error || 'รูปแบบข้อมูลไม่ถูกต้อง');
+        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), rows: data.rows })); } catch (e) { }
+        ingest(data.rows, new Date());
+      } catch (err) {
+        renderState('error', err.message);
+      } finally {
+        $('refreshBtn').classList.remove('spinning');
+      }
+    }
+
+    function ingest(rows, fetchedAt) {
+      people = rows.map(r => {
+        const email = (r.email || '').trim();
+        return {
+          nameTH: [r.prefixTH, r.firstTH, r.lastTH].filter(Boolean).join(' ').trim(),
+          nameEN: [r.firstEN, r.lastEN].filter(Boolean).join(' ').trim(),
+          nick: (r.nick || '').trim(),
+          branch: (r.branch || '').trim(),
+          dept: (r.dept || '').trim(),
+          position: (r.position || '').trim(),
+          division: (r.division || '').trim(),
+          email: /@/.test(email) ? email : '',
+          _search: [r.prefixTH, r.firstTH, r.lastTH, r.firstEN, r.lastEN, r.nick, r.branch, r.dept, r.position, r.division, email]
+            .join(' ').toLowerCase(),
+        };
+      }).filter(p => p.nameTH || p.nick);
+
+      buildFilters();
+      buildStats();
+      render();
+      $('updatedAt').textContent = 'ข้อมูลจาก Google Sheet · อัปเดตล่าสุด ' +
+        fetchedAt.toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' }) + ' น.';
+    }
+
+    /* ---------- Filters & stats ---------- */
+    function uniqueSorted(arr) {
+      return [...new Set(arr.filter(Boolean))].sort((a, b) => a.localeCompare(b, 'th'));
+    }
+    function fillSelect(sel, values, label) {
+      const cur = sel.value;
+      sel.innerHTML = '<option value="">' + label + ' · ทั้งหมด</option>' +
+        values.map(v => `<option value="${escAttr(v)}">${esc(v)}</option>`).join('');
+      if (values.includes(cur)) sel.value = cur;
+    }
+    function buildFilters() {
+      fillSelect($('filterBranch'), uniqueSorted(people.map(p => p.branch)), 'สาขา');
+      fillSelect($('filterDivision'), uniqueSorted(people.map(p => p.division)), 'ฝ่าย');
+      fillSelect($('filterDept'), uniqueSorted(people.map(p => p.dept)), 'แผนก');
+    }
+    function buildStats() {
+      const byBranch = {};
+      people.forEach(p => { byBranch[p.branch] = (byBranch[p.branch] || 0) + 1; });
+      const chips = Object.entries(byBranch)
+        .sort((a, b) => b[1] - a[1])
+        .map(([br, n]) =>
+          `<button class="stat-chip" data-branch="${escAttr(br)}">
+         <span class="dot" style="background:${brandColor(br)}"></span>${esc(br)} <b>${n}</b>
+       </button>`).join('');
+      $('statsStrip').innerHTML =
+        `<button class="stat-chip" data-branch=""><span class="dot" style="background:var(--ink)"></span>ทั้งหมด <b>${people.length}</b></button>` + chips;
+      $('statsStrip').querySelectorAll('.stat-chip').forEach(ch => {
+        ch.addEventListener('click', () => {
+          state.branch = ch.dataset.branch;
+          $('filterBranch').value = state.branch;
+          render();
+        });
+      });
+    }
+
+    /* ---------- Render ---------- */
+    function filtered() {
+      const q = state.q.trim().toLowerCase();
+      return people.filter(p =>
+        (!q || p._search.includes(q)) &&
+        (!state.branch || p.branch === state.branch) &&
+        (!state.division || p.division === state.division) &&
+        (!state.dept || p.dept === state.dept)
+      );
+    }
+
+    function render() {
+      syncControls();
+      const list = filtered();
+      $('resultCount').textContent = 'พบ ' + list.length + ' คน';
+
+      if (!list.length) {
+        content.innerHTML = `<div class="state"><div class="big">🔍</div>
+      <h2>ไม่พบพนักงานที่ตรงกับเงื่อนไข</h2>
+      <p>ลองพิมพ์คำค้นสั้นลง หรือกด "ล้างตัวกรอง" เพื่อดูทั้งหมด</p></div>`;
+        return;
+      }
+
+      content.innerHTML = '<div class="grid">' + list.map(personCard).join('') + '</div>';
+
+      content.querySelectorAll('.p-mail').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const mail = btn.dataset.mail;
+          try {
+            await navigator.clipboard.writeText(mail);
+          } catch (e) {
+            const ta = document.createElement('textarea');
+            ta.value = mail; document.body.appendChild(ta);
+            ta.select(); document.execCommand('copy'); ta.remove();
+          }
+          btn.classList.add('copied');
+          const span = btn.querySelector('span');
+          const old = span.textContent;
+          span.textContent = 'คัดลอกแล้ว ✓';
+          setTimeout(() => { span.textContent = old; btn.classList.remove('copied'); }, 1400);
+        });
+      });
+    }
+
+    function personCard(p) {
+      const color = brandColor(p.branch);
+      const nickShort = p.nick.length > 5;
+      const tags = [
+        p.branch ? `<span class="tag brand" style="background:${color}">${esc(p.branch)}</span>` : '',
+        p.dept ? `<span class="tag">${esc(p.dept)}</span>` : '',
+        p.division && p.division !== p.dept ? `<span class="tag">${esc(p.division)}</span>` : '',
+      ].join('');
+      const mail = p.email
+        ? `<button class="p-mail" data-mail="${escAttr(p.email)}" title="คลิกเพื่อคัดลอกอีเมล">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+         <span>${esc(p.email)}</span>
+       </button>`
+        : `<div class="no-mail">ไม่พบอีเมล</div>`;
+      return `<article class="person">
+    <div class="avatar ${nickShort ? 'small-text' : ''}" style="background:${color}">${esc(p.nick || p.nameTH.charAt(0))}</div>
+    <div class="p-body">
+      <div class="p-nick">${esc(p.nick || '—')}</div>
+      <div class="p-name">${esc(p.nameTH)}</div>
+      ${p.nameEN ? `<div class="p-name-en">${esc(p.nameEN)}</div>` : ''}
+      ${p.position ? `<div class="p-role">${esc(p.position)}</div>` : ''}
+      <div class="p-tags">${tags}</div>
+      ${mail}
+    </div>
+  </article>`;
+    }
+
+    function syncControls() {
+      $('searchBox').classList.toggle('has-text', !!state.q);
+      ['filterBranch', 'filterDivision', 'filterDept'].forEach(id => {
+        $(id).classList.toggle('active', !!$(id).value);
+      });
+      const any = state.q || state.branch || state.division || state.dept;
+      $('resetBtn').classList.toggle('visible', !!any);
+      $('statsStrip').querySelectorAll('.stat-chip').forEach(ch => {
+        ch.classList.toggle('selected', ch.dataset.branch === state.branch && (state.branch !== '' || ch.dataset.branch === ''));
+      });
+    }
+
+    /* ---------- States ---------- */
+    function renderState(kind, detail) {
+      $('resultCount').textContent = '';
+      if (kind === 'loading') {
+        content.innerHTML = '<div class="skeleton-grid">' + '<div class="sk-card"></div>'.repeat(6) + '</div>';
+      } else if (kind === 'setup') {
+        content.innerHTML = `<div class="state"><div class="big">⚙️</div>
+      <h2>ยังไม่ได้ตั้งค่าแหล่งข้อมูล</h2>
+      <p>เปิดไฟล์ <code>index.html</code> แล้ววาง URL ของ Apps Script Web App
+      ลงในตัวแปร <code>APPS_SCRIPT_URL</code> (บรรทัดบนสุดของ &lt;script&gt;)<br>
+      ดูขั้นตอน deploy ได้ในไฟล์ <code>คู่มือติดตั้ง.md</code></p></div>`;
+      } else {
+        content.innerHTML = `<div class="state"><div class="big">📡</div>
+      <h2>โหลดข้อมูลไม่สำเร็จ</h2>
+      <p>เชื่อมต่อ Google Sheet ไม่ได้ (${esc(detail || 'ไม่ทราบสาเหตุ')})<br>
+      ตรวจสอบว่า Web App deploy เป็น "Anyone" และ URL ถูกต้อง</p>
+      <button class="retry" onclick="loadData(true)">ลองใหม่</button></div>`;
+      }
+    }
+
+    /* ---------- Utils ---------- */
+    function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+    function escAttr(s) { return esc(s); }
+    function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+    /* ---------- Events ---------- */
+    $('searchInput').addEventListener('input', debounce(e => { state.q = e.target.value; render(); }, 120));
+    $('clearBtn').addEventListener('click', () => { $('searchInput').value = ''; state.q = ''; render(); $('searchInput').focus(); });
+    $('filterBranch').addEventListener('change', e => { state.branch = e.target.value; render(); });
+    $('filterDivision').addEventListener('change', e => { state.division = e.target.value; render(); });
+    $('filterDept').addEventListener('change', e => { state.dept = e.target.value; render(); });
+    $('resetBtn').addEventListener('click', () => {
+      state = { q: '', branch: '', division: '', dept: '' };
+      $('searchInput').value = '';
+      ['filterBranch', 'filterDivision', 'filterDept'].forEach(id => $(id).value = '');
+      render();
+    });
+    $('refreshBtn').addEventListener('click', () => loadData(true));
+    document.addEventListener('keydown', e => {
+      if (e.key === '/' && document.activeElement !== $('searchInput')) {
+        e.preventDefault(); $('searchInput').focus();
+      }
+    });
+
+    loadData();
+  </script>
+</body>
+
+</html>
