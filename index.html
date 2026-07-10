@@ -403,8 +403,8 @@
     .p-nick {
       font-family: 'IBM Plex Sans Thai', sans-serif;
       font-weight: 700;
-      font-size: 17px;
-      line-height: 1.25;
+      font-size: 16px;
+      line-height: 1.3;
     }
 
     .p-name {
@@ -699,7 +699,7 @@
        ตั้งค่า: วาง URL ของ Apps Script Web App ที่ deploy แล้วตรงนี้
        (ดูวิธี deploy ในไฟล์ คู่มือติดตั้ง.md)
        ============================================================ */
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyRtw9Wcpk8Mc8jt3M9lwN0faYLeO4m78F4EcXZm1hmx8mt9CNbd_xKfRFQvltGjYgIHQ/exec';
+    const APPS_SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
 
     const CACHE_KEY = 'tkc_directory_cache_v1';
     const CACHE_TTL_MIN = 30; // นาที
@@ -875,9 +875,8 @@
       return `<article class="person">
     <div class="avatar ${nickShort ? 'small-text' : ''}" style="background:${color}">${esc(p.nick || p.nameTH.charAt(0))}</div>
     <div class="p-body">
-      <div class="p-nick">${esc(p.nick || '—')}</div>
-      <div class="p-name">${esc(p.nameTH)}</div>
-      ${p.nameEN ? `<div class="p-name-en">${esc(p.nameEN)}</div>` : ''}
+      <div class="p-nick">${esc(p.nameTH || p.nick || '—')}</div>
+      <div class="p-name">${p.nick ? 'ชื่อเล่น: ' + esc(p.nick) : ''}${p.nick && p.nameEN ? ' · ' : ''}${esc(p.nameEN)}</div>
       ${p.position ? `<div class="p-role">${esc(p.position)}</div>` : ''}
       <div class="p-tags">${tags}</div>
       ${mail}
